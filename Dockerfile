@@ -24,3 +24,4 @@ EXPOSE 80 443
 
 # راه‌اندازی Nginx و Tinyproxy
 CMD ["/bin/sh", "-c", "service tinyproxy start && nginx -g 'daemon off;'"]
+
