@@ -15,7 +15,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # RUN mkdir -p /etc/nginx/certs
 
 # Expose Squid and NGINX ports
-EXPOSE 80 443 3128
+EXPOSE 80
 
 # Start both services
 # CMD service squid start && nginx -g "daemon off;"
