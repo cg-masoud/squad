@@ -1,8 +1,9 @@
-# Use the official Nginx image as the base image
-FROM nginx:alpine
+FROM ubuntu:22.04
 
-# Copy the custom Nginx configuration file
-COPY nginx.conf /etc/nginx/nginx.conf
+RUN apt-get update && \
+    apt-get install -y squid && \
+    rm -rf /var/lib/apt/lists/*
 
-# Expose port 80 for HTTP
-EXPOSE 80
+COPY squid.conf /etc/squid/squid.conf
+
+CMD ["squid", "-N", "-d", "1"]
