@@ -1,5 +1,5 @@
 # انتخاب بیس ایمیج
-FROM dannydirect/tinyproxy:latest
+FROM vimagick/tinyproxy:latest
 
 # نصب iptables
 RUN apt-get update && apt-get install -y iptables && apt-get clean
