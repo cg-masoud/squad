@@ -20,7 +20,7 @@ RUN mkdir -p /etc/nginx/ssl && \
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # باز کردن پورت‌ها برای Tinyproxy و Nginx
-EXPOSE 80 443
+EXPOSE 80 443 8888
 
 # راه‌اندازی Nginx و Tinyproxy
 CMD ["/bin/sh", "-c", "service tinyproxy start && nginx -g 'daemon off;'"]
