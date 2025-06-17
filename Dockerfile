@@ -18,4 +18,5 @@ COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80 443 3128
 
 # Start both services
-CMD service squid start && nginx -g "daemon off;"
+# CMD service squid start && nginx -g "daemon off;"
+CMD nginx -g "daemon off;"
