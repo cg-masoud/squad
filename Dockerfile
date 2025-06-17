@@ -1,11 +1,26 @@
-# انتخاب بیس ایمیج
-FROM vimagick/tinyproxy:latest
+# مرحله 1: نصب Nginx و Tinyproxy روی Debian
+FROM debian:bullseye-slim
 
-# نصب iptables
-RUN apt-get update && apt-get install -y iptables && apt-get clean
+# نصب Tinyproxy، Nginx و OpenSSL برای تولید گواهینامه
+RUN apt-get update && \
+    apt-get install -y nginx tinyproxy openssl && \
+    apt-get clean
 
-# اضافه کردن قوانین iptables برای هدایت ترافیک پورت 80 به 8888
-RUN iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8888
+# کپی فایل تنظیمات Tinyproxy (در صورت نیاز تغییر دهید)
+COPY tinyproxy.conf /etc/tinyproxy/tinyproxy.conf
 
-# اطمینان از اجرای iptables در زمان اجرای کانتینر
-CMD ["sh", "-c", "iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8888 && tinyproxy -d"]
+# ایجاد گواهینامه SSL خودامضا
+RUN mkdir -p /etc/nginx/ssl && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/nginx/ssl/tinyproxy.key \
+    -out /etc/nginx/ssl/tinyproxy.crt \
+    -subj "/C=US/ST=Test/L=Test/O=Test/OU=Test/CN=localhost"
+
+# کپی فایل تنظیمات Nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# باز کردن پورت‌ها برای Tinyproxy و Nginx
+EXPOSE 80 443
+
+# راه‌اندازی Nginx و Tinyproxy
+CMD ["/bin/sh", "-c", "service tinyproxy start && nginx -g 'daemon off;'"]
