@@ -1,27 +1,15 @@
-# مرحله 1: نصب Nginx و Tinyproxy روی Debian
-FROM debian:bullseye-slim
+# Use the official Nginx base image
+FROM nginx:alpine
 
-# نصب Tinyproxy، Nginx و OpenSSL برای تولید گواهینامه
-RUN apt-get update && \
-    apt-get install -y nginx tinyproxy openssl && \
-    apt-get clean
+# Copy SSL certificates (if needed)
+COPY ssl/tinyproxy.crt /etc/nginx/ssl/tinyproxy.crt
+COPY ssl/tinyproxy.key /etc/nginx/ssl/tinyproxy.key
 
-# کپی فایل تنظیمات Tinyproxy (در صورت نیاز تغییر دهید)
-COPY tinyproxy.conf /etc/tinyproxy/tinyproxy.conf
-
-# ایجاد گواهینامه SSL خودامضا
-RUN mkdir -p /etc/nginx/ssl && \
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /etc/nginx/ssl/tinyproxy.key \
-    -out /etc/nginx/ssl/tinyproxy.crt \
-    -subj "/C=US/ST=Test/L=Test/O=Test/OU=Test/CN=localhost"
-
-# کپی فایل تنظیمات Nginx
+# Copy the custom Nginx configuration file to the container
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# باز کردن پورت‌ها برای Tinyproxy و Nginx
-EXPOSE 80 443 8888
+# Expose ports 80 and 443 for HTTP and HTTPS traffic
+EXPOSE 80 443
 
-# راه‌اندازی Nginx و Tinyproxy
-CMD ["/bin/sh", "-c", "service tinyproxy start && nginx -g 'daemon off;'"]
-
+# Start Nginx when the container launches
+CMD ["nginx", "-g", "daemon off;"]
