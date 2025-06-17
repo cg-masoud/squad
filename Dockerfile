@@ -16,5 +16,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Expose Squid and NGINX ports
 EXPOSE 80 3128
 
+CMD ping http://127.0.0.1:3128
+
 # Start both services
 CMD service squid start && nginx -g "daemon off;"
