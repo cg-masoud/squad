@@ -2,11 +2,10 @@
 FROM debian:latest
 
 # Install Squid and NGINX
-# RUN apt-get update && apt-get install -y squid nginx && apt-get clean
-RUN apt-get update && apt-get install -y nginx && apt-get clean
+RUN apt-get update && apt-get install -y squid nginx && apt-get clean
 
 # Copy Squid configuration
-# COPY squid.conf /etc/squid/squid.conf
+COPY squid.conf /etc/squid/squid.conf
 
 # Copy NGINX configuration
 COPY nginx.conf /etc/nginx/nginx.conf
@@ -18,5 +17,4 @@ COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 
 # Start both services
-# CMD service squid start && nginx -g "daemon off;"
-CMD nginx -g "daemon off;"
+CMD service squid start && nginx -g "daemon off;"
