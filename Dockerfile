@@ -1,22 +1,11 @@
-# Base image for Squid
-FROM debian:latest
+# انتخاب بیس ایمیج
+FROM dannydirect/tinyproxy:latest
 
-# Install Squid and NGINX
-RUN apt-get update && apt-get install -y squid nginx && apt-get clean
+# نصب iptables
+RUN apt-get update && apt-get install -y iptables && apt-get clean
 
-# Copy Squid configuration
-COPY squid.conf /etc/squid/squid.conf
+# اضافه کردن قوانین iptables برای هدایت ترافیک پورت 80 به 8888
+RUN iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8888
 
-# Copy NGINX configuration
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Create necessary directories
-# RUN mkdir -p /etc/nginx/certs
-
-# Expose Squid and NGINX ports
-EXPOSE 80 3128
-
-CMD ping http://127.0.0.1:3128
-
-# Start both services
-CMD service squid start && nginx -g "daemon off;"
+# اطمینان از اجرای iptables در زمان اجرای کانتینر
+CMD ["sh", "-c", "iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8888 && tinyproxy -d"]
